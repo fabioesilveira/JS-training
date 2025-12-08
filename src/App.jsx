@@ -1,56 +1,70 @@
-import { useEffect, useState } from "react"
+import { useState } from "react";
 
 export default function App() {
 
-const cycle = {
-  red: "green",
-  yellow: "red",
-  green: "yellow"
-}
+  const questions = [
+    {
+      question: "Which team Stephen Curry plays for?",
+      options: ["Warriors", "Lakers", "Celtics"],
+      answer: "Warriors",
+    },
+    {
+      question: "Which team Jaylen Brown plays for?",
+      options: ["Warriors", "Lakers", "Celtics"],
+      answer: "Celtics",
+    },
+    {
+      question: "Which team LeBron plays for?",
+      options: ["Warriors", "Lakers", "Celtics"],
+      answer: "Lakers",
+    },
+  ];
 
-const [light, setLight] = useState("red")
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [score, setScore] = useState(0);
 
- useEffect(() => {
-  const interval = setInterval(() => {
-    setLight((prev) => cycle[prev])
-  }, 2000)
+  function handleNext() {
+    if (selectedAnswer === questions[currentIndex].answer) {
+      setScore(score + 1)
+    }
 
-  return() => clearInterval(interval)
- }, [])
+    setSelectedAnswer("");
+    setCurrentIndex(currentIndex + 1);
+  }
+
+  function handleRestart() {
+    setCurrentIndex(0);
+    setSelectedAnswer("");
+    setScore(0);
+  }
+
+  if (currentIndex === questions.length) {
+    return (
+      <>
+        <h2>the quiz has ended, you scored {score} of {questions.lenght}</h2>
+        <button onClick={handleRestart}>Restart</button>
+      </>
+    )
+  }
 
 
   return (
-    <div>
-      <div
-        style={{
-          height: "180px",
-          width: "50px",
-          backgroundColor: "black",
-          borderRadius: "10px",
-          display: "inline-block",
-          padding: "22px"
-        }}>
-        <div style={{
-          height: "50px",
-          width: "50px",
-          backgroundColor: light === "red" ? "red" : "rgb(71, 68, 68)",
-          borderRadius: "50%",
-          marginBottom: "10px"
-        }} />
-        <div style={{
-          height: "50px",
-          width: "50px",
-          backgroundColor: light === "yellow" ? "yellow" : "rgb(71, 68, 68)",
-          borderRadius: "50%",
-          marginBottom: "10px"
-        }} />
-        <div style={{
-          height: "50px",
-          width: "50px",
-          backgroundColor: light === "green" ? "green" : "rgb(71, 68, 68)",
-          borderRadius: "50%"
-        }} />
-      </div>
-    </div>
+    <>
+      <h2>{questions[currentIndex].question}</h2>
+      {questions[currentIndex].options.map((e) => (
+        <>
+        <input
+          type="radio"
+          name="answer"
+          checked={selectedAnswer === e}
+          onChange={(event) => setSelectedAnswer(event.target.value)}
+          value={e}
+        />
+        {e}
+        </>
+      ))}
+      <button onClick={handleNext} disabled={!selectedAnswer}>next</button>
+    </>
   )
 }
